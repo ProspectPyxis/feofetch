@@ -3,12 +3,14 @@ use serde::Deserialize;
 use std::{default::Default, fs::File, io::Read};
 
 #[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
 pub enum FetchType {
     Os,
     Version,
 }
 
 #[derive(Deserialize)]
+#[serde(default)]
 pub struct Config {
     pub use_icons: bool,
     pub data: Vec<FetchType>,
