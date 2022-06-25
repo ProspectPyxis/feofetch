@@ -16,17 +16,25 @@ const PACKAGE_MANAGERS: &[PacManData] = &[
 ];
 
 pub fn get_packages() -> String {
-    let mut packages_count = 0;
+    let mut pacmans = Vec::new();
 
-    for pacman in PACKAGE_MANAGERS {
-        if which(pacman.check_name).is_ok() {
+    let packages_count = PACKAGE_MANAGERS.iter().filter(|pacman| which(pacman.check_name).is_ok())
+        .fold(0, |accum, pacman| {
             let out = std::process::Command::new(pacman.cmd_name)
                 .args(pacman.args)
                 .output()
                 .expect("something went wrong");
+            let packages = match std::str::from_utf8(&out.stdout) {
+                Ok(p) => p,
+                Err(_) => return accum,
+            };
+            pacmans.push(pacman.cmd_name);
+            accum + packages.lines().count()
+        });
 
-            println!("{}", std::str::from_utf8(&out.stdout).unwrap());
-        }
+    if pacmans.is_empty() {
+        "unknown".to_string()
+    } else {
+        format!("{} ({})", packages_count, pacmans.join(", "))
     }
-    "hello".to_string()
 }

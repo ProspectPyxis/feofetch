@@ -1,4 +1,7 @@
-use crate::config::{self, Config, FetchType};
+use crate::{
+    config::{self, Config, FetchType},
+    packages,
+};
 use crossterm::{
     cursor::{MoveRight, RestorePosition, SavePosition},
     queue,
@@ -48,6 +51,10 @@ impl FetchData {
                     }
                     Err(_) => "unknown".to_string(),
                 },
+            },
+            FetchType::Packages => FetchData {
+                label: "packages",
+                text: packages::get_packages(),
             },
             #[allow(unreachable_patterns)]
             _ => todo!(),
