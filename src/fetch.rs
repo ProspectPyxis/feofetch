@@ -42,15 +42,15 @@ pub fn get_os() -> FetchData {
     }
 }
 
-pub fn get_release() -> FetchData {
+pub fn get_version() -> FetchData {
     FetchData {
-        label: "kernel",
+        label: "version",
         text: {
-            let mut release = sys_info::os_release().unwrap_or_else(|_| "unknown".to_string());
-            if let Some(index) = release.find('-') {
-                release.truncate(index);
+            let mut version = sys_info::os_release().unwrap_or_else(|_| "unknown".to_string());
+            if let Some(index) = version.find('-') {
+                version.truncate(index);
             }
-            release
+            version
         },
     }
 }

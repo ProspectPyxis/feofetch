@@ -1,9 +1,10 @@
 mod fetch;
+mod config;
 
 fn main() {
     let os = fetch::get_os();
-    let release = fetch::get_release();
+    let version = fetch::get_version();
 
     os.queue_print(7);
-    release.queue_print(7);
+    version.queue_print(7);
 }
