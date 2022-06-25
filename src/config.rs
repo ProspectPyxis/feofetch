@@ -24,7 +24,7 @@ impl Default for Config {
         Config {
             use_icons: false,
             data: vec![FetchType::Os, FetchType::Version, FetchType::Uptime],
-            align_spaces: 1,
+            align_spaces: 2,
         }
     }
 }
