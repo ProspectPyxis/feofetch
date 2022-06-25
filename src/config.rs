@@ -23,7 +23,7 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             use_icons: false,
-            data: vec![FetchType::Os, FetchType::Version],
+            data: vec![FetchType::Os, FetchType::Version, FetchType::Uptime],
             align_spaces: 1,
         }
     }

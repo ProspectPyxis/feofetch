@@ -39,6 +39,27 @@ impl FetchData {
                     version
                 },
             },
+            FetchType::Uptime => FetchData {
+                label: "uptime",
+                text: match uptime_lib::get() {
+                    Ok(time) => {
+                        let time = time.as_secs();
+                        let mut timestr = String::new();
+                        if time >= 3600 {
+                            timestr.push_str(&format!("{}h ", time / 3600));
+                        }
+                        if time % 3600 > 0 {
+                            timestr.push_str(&format!("{}m", (time % 3600) / 60));
+                        }
+                        if timestr.is_empty() {
+                            timestr = "0m".to_string();
+                        }
+                        timestr
+                    }
+                    Err(_) => "unknown".to_string(),
+                },
+            },
+            #[allow(unreachable_patterns)]
             _ => todo!(),
         }
     }
