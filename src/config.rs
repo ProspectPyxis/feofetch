@@ -9,6 +9,7 @@ pub enum FetchType {
     Os,
     Version,
     Uptime,
+    Packages,
 }
 
 #[derive(Deserialize)]
@@ -55,7 +56,9 @@ pub fn get_config() -> Config {
         Ok(mut f) => {
             let mut contents = String::new();
             if let Err(e) = f.read_to_string(&mut contents) {
-                panic!("Failed to read config file: {}", e);
+                eprintln!("Error reading config file: {}", e);
+                eprintln!("Using default configuration instead");
+                return Config::default();
             }
             match toml::from_str(&contents) {
                 Ok(c) => c,

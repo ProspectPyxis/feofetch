@@ -1,5 +1,6 @@
 mod config;
 mod fetch;
+mod packages;
 
 fn main() {
     let conf = config::get_config();
