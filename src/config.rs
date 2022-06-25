@@ -18,6 +18,7 @@ pub struct Config {
     pub use_icons: bool,
     pub data: Vec<FetchType>,
     pub align_spaces: u16,
+    pub display_package_manager: bool,
 }
 
 impl Default for Config {
@@ -26,6 +27,7 @@ impl Default for Config {
             use_icons: false,
             data: vec![FetchType::Os, FetchType::Version, FetchType::Uptime, FetchType::Packages],
             align_spaces: 2,
+            display_package_manager: false,
         }
     }
 }

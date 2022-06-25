@@ -15,7 +15,7 @@ pub struct FetchData {
 }
 
 impl FetchData {
-    pub fn get(data: &FetchType) -> Self {
+    pub fn get(data: &FetchType, conf: &Config) -> Self {
         match data {
             FetchType::Os => FetchData {
                 label: "os",
@@ -54,7 +54,7 @@ impl FetchData {
             },
             FetchType::Packages => FetchData {
                 label: "packages",
-                text: packages::get_packages(),
+                text: packages::get_packages(conf.display_package_manager),
             },
             #[allow(unreachable_patterns)]
             _ => todo!(),
@@ -76,7 +76,7 @@ impl FetchData {
 }
 
 pub fn fetch_all(conf: &Config) -> Vec<FetchData> {
-    conf.data.iter().map(FetchData::get).collect()
+    conf.data.iter().map(|d| FetchData::get(d, conf)).collect()
 }
 
 pub fn print_all_fetches(data: &[FetchData], conf: &Config) {
