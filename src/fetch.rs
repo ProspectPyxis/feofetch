@@ -1,9 +1,9 @@
-use std::io::stdout;
 use crossterm::{
+    cursor::{MoveRight, RestorePosition, SavePosition},
     queue,
-    cursor::{RestorePosition, SavePosition, MoveRight},
     style::{Print, PrintStyledContent, Stylize},
 };
+use std::io::stdout;
 
 pub struct FetchData {
     pub label: &'static str,
@@ -20,7 +20,8 @@ impl FetchData {
             MoveRight(data_pos),
             Print(&self.text),
             Print("\n"),
-        ).unwrap();
+        )
+        .unwrap();
     }
 }
 
@@ -37,6 +38,19 @@ pub fn get_os() -> FetchData {
             } else {
                 os.to_lowercase()
             }
-        }
+        },
+    }
+}
+
+pub fn get_release() -> FetchData {
+    FetchData {
+        label: "kernel",
+        text: {
+            let mut release = sys_info::os_release().unwrap_or_else(|_| "unknown".to_string());
+            if let Some(index) = release.find('-') {
+                release.truncate(index);
+            }
+            release
+        },
     }
 }
