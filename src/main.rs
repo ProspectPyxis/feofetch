@@ -1,10 +1,9 @@
-mod fetch;
 mod config;
+mod fetch;
 
 fn main() {
-    let os = fetch::get_os();
-    let version = fetch::get_version();
+    let conf = config::get_config();
 
-    os.queue_print(7);
-    version.queue_print(7);
+    let data = fetch::fetch_all(&conf);
+    fetch::print_all_fetches(&data, &conf);
 }

@@ -3,16 +3,24 @@ use serde::Deserialize;
 use std::{default::Default, fs::File, io::Read};
 
 #[derive(Deserialize)]
+pub enum FetchType {
+    Os,
+    Version,
+}
+
+#[derive(Deserialize)]
 pub struct Config {
-    use_icons: bool,
-    data: Vec<String>,
+    pub use_icons: bool,
+    pub data: Vec<FetchType>,
+    pub align_spaces: u16,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Config {
             use_icons: false,
-            data: vec!["os".to_string(), "version".to_string()],
+            data: vec![FetchType::Os, FetchType::Version],
+            align_spaces: 1,
         }
     }
 }
@@ -22,7 +30,8 @@ pub fn get_config() -> Config {
         top_level_domain: "com".to_string(),
         author: "ProspectPyxis".to_string(),
         app_name: "feofetch".to_string(),
-    }).unwrap();
+    })
+    .unwrap();
 
     let config_path = strategy.in_config_dir("config.toml");
     let config_file = File::open(config_path);
