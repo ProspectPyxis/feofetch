@@ -4,9 +4,11 @@ use std::{default::Default, fs::File, io::Read};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "lowercase")]
+#[non_exhaustive]
 pub enum FetchType {
     Os,
     Version,
+    Uptime,
 }
 
 #[derive(Deserialize)]

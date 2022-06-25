@@ -39,6 +39,7 @@ impl FetchData {
                     version
                 },
             },
+            _ => todo!(),
         }
     }
 
