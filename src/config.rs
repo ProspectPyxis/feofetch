@@ -25,7 +25,12 @@ impl Default for Config {
     fn default() -> Self {
         Config {
             use_icons: false,
-            data: vec![FetchType::Os, FetchType::Version, FetchType::Uptime, FetchType::Packages],
+            data: vec![
+                FetchType::Os,
+                FetchType::Version,
+                FetchType::Uptime,
+                FetchType::Packages,
+            ],
             align_spaces: 2,
             display_package_manager: false,
         }

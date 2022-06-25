@@ -4,7 +4,7 @@ struct PacManData {
     check_name: &'static str,
     display_name: &'static str,
     cmd_name: &'static str,
-    args: &'static[&'static str],
+    args: &'static [&'static str],
 }
 
 // TODO: Add more package managers
@@ -32,7 +32,9 @@ const PACKAGE_MANAGERS: &[PacManData] = &[
 pub fn get_packages(display_package_manager: bool) -> String {
     let mut pacmans = Vec::new();
 
-    let packages_count = PACKAGE_MANAGERS.iter().filter(|pacman| which(pacman.check_name).is_ok())
+    let packages_count = PACKAGE_MANAGERS
+        .iter()
+        .filter(|pacman| which(pacman.check_name).is_ok())
         .fold(0, |accum, pacman| {
             let out = std::process::Command::new(pacman.cmd_name)
                 .args(pacman.args)
