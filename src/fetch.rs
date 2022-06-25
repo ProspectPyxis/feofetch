@@ -1,20 +1,25 @@
 use std::io::stdout;
 use crossterm::{
     queue,
+    cursor::{RestorePosition, SavePosition, MoveRight},
     style::{Print, PrintStyledContent, Stylize},
 };
 
 pub struct FetchData {
-    label: &'static str,
+    pub label: &'static str,
     text: String,
 }
 
 impl FetchData {
-    pub fn queue_print(&self) {
+    pub fn queue_print(&self, data_pos: u16) {
         queue!(
             stdout(),
+            SavePosition,
             PrintStyledContent(self.label.bold().cyan()),
-            Print(format!(" {}", self.text)),
+            RestorePosition,
+            MoveRight(data_pos),
+            Print(&self.text),
+            Print("\n"),
         ).unwrap();
     }
 }
