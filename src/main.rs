@@ -4,7 +4,6 @@ mod fetch;
 mod packages;
 
 use etcetera::app_strategy::{self, AppStrategy, AppStrategyArgs};
-use std::path::PathBuf;
 
 fn main() {
     let strategy = app_strategy::choose_app_strategy(AppStrategyArgs {
@@ -25,5 +24,5 @@ fn main() {
     };
 
     let data = fetch::fetch_all(&conf);
-    fetch::print_all_fetches(&data, &conf);
+    fetch::print_all_fetches(&data, &conf, ascii_padding);
 }

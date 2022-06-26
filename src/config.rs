@@ -45,7 +45,7 @@ impl Default for Config {
             align_spaces: 2,
             display_package_manager: false,
             use_wmctrl: false,
-            ascii: AsciiConfig::default()
+            ascii: AsciiConfig::default(),
         }
     }
 }

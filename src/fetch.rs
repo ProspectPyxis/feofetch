@@ -98,9 +98,10 @@ impl FetchData {
         }
     }
 
-    pub fn queue_print(&self, data_pos: u16) {
+    pub fn queue_print(&self, data_pos: u16, ascii_padding: u16) {
         queue!(
             stdout(),
+            MoveRight(ascii_padding),
             SavePosition,
             PrintStyledContent(self.label.bold().cyan()),
             RestorePosition,
@@ -116,7 +117,7 @@ pub fn fetch_all(conf: &Config) -> Vec<FetchData> {
     conf.data.iter().map(|d| FetchData::get(d, conf)).collect()
 }
 
-pub fn print_all_fetches(data: &[FetchData], conf: &Config) {
+pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii_padding: u16) {
     let max_label_len = data.iter().fold(0, |acc, x| {
         acc.max(
             x.label
@@ -128,6 +129,6 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config) {
         )
     });
     for d in data {
-        d.queue_print(max_label_len);
+        d.queue_print(max_label_len, ascii_padding);
     }
 }
