@@ -28,7 +28,11 @@ pub fn print_ascii(ascii_path: PathBuf, align_spaces: u16) -> (u16, u16) {
         SavePosition,
         Print(&ascii),
         RestorePosition,
-        MoveUp((ascii.lines().count() - 1).try_into().expect("Loaded ascii has too many lines")),
+        MoveUp(
+            (ascii.lines().count() - 1)
+                .try_into()
+                .expect("Loaded ascii has too many lines")
+        ),
     )
     .unwrap_or_else(|e| panic!("Error writing to stdout: {}", e));
 

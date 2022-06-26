@@ -117,7 +117,12 @@ pub fn fetch_all(conf: &Config) -> Vec<FetchData> {
     conf.data.iter().map(|d| FetchData::get(d, conf)).collect()
 }
 
-pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii_padding: u16) -> u16 {
+pub fn print_all_fetches(
+    data: &[FetchData],
+    conf: &Config,
+    ascii_padding: u16,
+    ascii_lines: u16,
+) -> u16 {
     let max_label_len = data.iter().fold(0, |acc, x| {
         acc.max(
             x.label
@@ -128,8 +133,15 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii_padding: u16) 
                 + conf.align_spaces,
         )
     });
+    let ascii_space_diff = ascii_lines.saturating_sub(data.len().try_into().unwrap_or(u16::MAX));
+    let data_top_padding = ascii_space_diff / 2;
+    let data_bottom_padding = ascii_space_diff / 2 + (ascii_space_diff % 2);
+
+    let print_newline = |_| queue!(stdout(), Print("\n"),).unwrap();
+    (0..data_top_padding).for_each(&print_newline);
     for d in data {
         d.queue_print(max_label_len, ascii_padding);
     }
+    (0..data_bottom_padding).for_each(&print_newline);
     data.len().try_into().unwrap_or(u16::MAX)
 }
