@@ -3,13 +3,14 @@ use serde::Deserialize;
 use std::{default::Default, fs::File, io::Read};
 
 #[derive(Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 #[non_exhaustive]
 pub enum FetchType {
     Os,
     Version,
     Uptime,
     Packages,
+    Wm,
 }
 
 #[derive(Deserialize)]
