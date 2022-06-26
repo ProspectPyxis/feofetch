@@ -7,7 +7,7 @@ use crossterm::{
     queue,
     style::{Print, PrintStyledContent, Stylize},
 };
-use std::io::stdout;
+use std::{env, io::stdout};
 
 pub struct FetchData {
     pub label: &'static str,
@@ -55,6 +55,19 @@ impl FetchData {
             FetchType::Packages => FetchData {
                 label: "packages",
                 text: packages::get_packages(conf.display_package_manager),
+            },
+            FetchType::Wm => FetchData {
+                label: "wm",
+                text: match sys_info::os_type()
+                    .unwrap_or_else(|_| "Unknown".to_string())
+                    .as_str()
+                {
+                    "Linux" => env::var("XDG_SESSION_DESKTOP")
+                        .or_else(|_| env::var("DESKTOP_SESSION"))
+                        .unwrap_or_else(|_| "unknown".to_string()),
+                    // TODO: Handle windows/mac os
+                    _ => "unknown".to_string(),
+                },
             },
             #[allow(unreachable_patterns)]
             _ => todo!(),

@@ -31,6 +31,7 @@ impl Default for Config {
                 FetchType::Version,
                 FetchType::Uptime,
                 FetchType::Packages,
+                FetchType::Wm,
             ],
             align_spaces: 2,
             display_package_manager: false,
