@@ -20,8 +20,15 @@ pub struct Config {
     pub align_spaces: u16,
     pub display_package_manager: bool,
     pub use_wmctrl: bool,
-    pub print_ascii: bool,
+    pub ascii: AsciiConfig,
+}
+
+#[derive(Deserialize)]
+#[serde(default)]
+pub struct AsciiConfig {
+    pub print: bool,
     pub ascii_path: Option<String>,
+    pub align_spaces: u16,
 }
 
 impl Default for Config {
@@ -38,8 +45,17 @@ impl Default for Config {
             align_spaces: 2,
             display_package_manager: false,
             use_wmctrl: false,
-            print_ascii: false,
+            ascii: AsciiConfig::default()
+        }
+    }
+}
+
+impl Default for AsciiConfig {
+    fn default() -> Self {
+        AsciiConfig {
+            print: false,
             ascii_path: None,
+            align_spaces: 2,
         }
     }
 }
