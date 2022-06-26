@@ -8,6 +8,7 @@ use crossterm::{
     style::{Print, PrintStyledContent, Stylize},
 };
 use std::{env, io::stdout};
+use which::which;
 
 pub struct FetchData {
     pub label: &'static str,
@@ -59,15 +60,37 @@ impl FetchData {
             },
             FetchType::Wm => FetchData {
                 label: "wm",
-                text: match sys_info::os_type()
-                    .unwrap_or_else(|_| "Unknown".to_string())
-                    .as_str()
-                {
-                    "Linux" => env::var("XDG_SESSION_DESKTOP")
-                        .or_else(|_| env::var("DESKTOP_SESSION"))
-                        .unwrap_or_else(|_| "unknown".to_string()),
-                    // TODO: Handle windows/mac os
-                    _ => "unknown".to_string(),
+                text: {
+                    let get_no_wmctrl = || match sys_info::os_type()
+                        .unwrap_or_else(|_| "Unknown".to_string())
+                        .as_str()
+                    {
+                        "Linux" => env::var("XDG_SESSION_DESKTOP")
+                            .or_else(|_| env::var("DESKTOP_SESSION"))
+                            .unwrap_or_else(|_| "unknown".to_string()),
+                        // TODO: Handle windows/mac os
+                        _ => "unknown".to_string(),
+                    };
+
+                    if conf.use_wmctrl && which("wmctrl").is_ok() {
+                        let try_get_wmctrl = || -> Result<String, anyhow::Error> {
+                            let out = std::process::Command::new("wmctrl").args(["-m"]).output()?;
+                            let s = std::str::from_utf8(&out.stdout)?;
+                            match s.lines().find(|x| x.starts_with("Name: ")) {
+                                Some(line) => {
+                                    Ok(line.strip_prefix("Name: ").unwrap_or("error").to_string())
+                                }
+                                None => Ok("unknown".to_string()),
+                            }
+                        };
+
+                        match try_get_wmctrl() {
+                            Ok(wm) => wm,
+                            Err(_) => get_no_wmctrl(),
+                        }
+                    } else {
+                        get_no_wmctrl()
+                    }
                 },
             },
             #[allow(unreachable_patterns)]
