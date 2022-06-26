@@ -1,6 +1,5 @@
-use etcetera::app_strategy::{self, AppStrategy, AppStrategyArgs};
 use serde::Deserialize;
-use std::{default::Default, fs::File, io::Read};
+use std::{default::Default, fs::File, io::Read, path::PathBuf};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -53,15 +52,7 @@ pub fn get_os() -> String {
     }
 }
 
-pub fn get_config() -> Config {
-    let strategy = app_strategy::choose_app_strategy(AppStrategyArgs {
-        top_level_domain: "com".to_string(),
-        author: "ProspectPyxis".to_string(),
-        app_name: "feofetch".to_string(),
-    })
-    .unwrap();
-
-    let config_path = strategy.in_config_dir("config.toml");
+pub fn get_config(config_path: PathBuf) -> Config {
     let config_file = File::open(config_path);
     match config_file {
         Ok(mut f) => {
