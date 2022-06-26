@@ -117,7 +117,7 @@ pub fn fetch_all(conf: &Config) -> Vec<FetchData> {
     conf.data.iter().map(|d| FetchData::get(d, conf)).collect()
 }
 
-pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii_padding: u16) {
+pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii_padding: u16) -> u16 {
     let max_label_len = data.iter().fold(0, |acc, x| {
         acc.max(
             x.label
@@ -131,4 +131,5 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii_padding: u16) 
     for d in data {
         d.queue_print(max_label_len, ascii_padding);
     }
+    data.len().try_into().unwrap_or(u16::MAX)
 }
