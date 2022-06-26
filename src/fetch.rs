@@ -37,17 +37,18 @@ impl FetchData {
                 text: match uptime_lib::get() {
                     Ok(time) => {
                         let time = time.as_secs();
-                        let mut timestr = String::new();
+                        let mut timestr = Vec::new();
                         if time >= 3600 {
-                            timestr.push_str(&format!("{}h ", time / 3600));
+                            timestr.push(format!("{}h", time / 3600));
                         }
                         if time % 3600 > 0 {
-                            timestr.push_str(&format!("{}m", (time % 3600) / 60));
+                            timestr.push(format!("{}m", (time % 3600) / 60));
                         }
-                        if timestr.is_empty() {
-                            timestr = "0m".to_string();
+                        if !timestr.is_empty() {
+                            timestr.join(" ")
+                        } else {
+                            "0m".to_string()
                         }
-                        timestr
                     }
                     Err(_) => "unknown".to_string(),
                 },
