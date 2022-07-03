@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::{default::Default, fs, path::PathBuf};
+use std::{default::Default, fs, io::ErrorKind, path::PathBuf};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -75,7 +75,7 @@ pub fn get_os() -> String {
 }
 
 pub fn get_config(config_path: PathBuf) -> Config {
-    let throw_and_default = |msg, e: anyhow::Error| {
+    let throw_and_default = |msg, e| {
         eprintln!("{}: {}", msg, e);
         eprintln!("Falling back to default configuration");
         Config::default()
@@ -84,9 +84,12 @@ pub fn get_config(config_path: PathBuf) -> Config {
     match fs::read_to_string(config_path) {
         Ok(config_str) => match toml::from_str(&config_str) {
             Ok(c) => c,
-            Err(e) => throw_and_default("Unable to parse TOML config", e.into()),
+            Err(e) => throw_and_default("Unable to parse TOML config", e.to_string()),
         },
-        Err(e) => throw_and_default("Unable to read config.toml file", e.into()),
+        Err(e) => match e.kind() {
+            ErrorKind::NotFound => Config::default(),
+            _ => throw_and_default("Unable to read config.toml", e.to_string()),
+        },
     }
 }
 

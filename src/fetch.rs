@@ -76,9 +76,12 @@ impl FetchData {
                     };
 
                     if conf.use_wmctrl && which("wmctrl").is_ok() {
-                        let try_get_wmctrl = || -> Result<String, anyhow::Error> {
-                            let out = std::process::Command::new("wmctrl").args(["-m"]).output()?;
-                            let s = std::str::from_utf8(&out.stdout)?;
+                        let try_get_wmctrl = || -> Result<String, ()> {
+                            let out = std::process::Command::new("wmctrl")
+                                .arg("-m")
+                                .output()
+                                .map_err(|_| ())?;
+                            let s = std::str::from_utf8(&out.stdout).map_err(|_| ())?;
                             match s.lines().find(|x| x.starts_with("Name: ")) {
                                 Some(line) => {
                                     Ok(line.strip_prefix("Name: ").unwrap_or("error").to_string())
@@ -137,8 +140,7 @@ pub fn print_all_fetches(
     let mut stdout = stdout();
 
     for _ in 0..conf.offset.1 {
-        stdout
-            .queue(Print('\n'))?;
+        stdout.queue(Print('\n'))?;
     }
 
     let mut ascii_lines = ascii.unwrap_or("").lines().peekable();
