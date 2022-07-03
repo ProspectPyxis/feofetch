@@ -21,6 +21,7 @@ pub struct Config {
     pub display_package_manager: bool,
     pub use_wmctrl: bool,
     pub ascii: AsciiConfig,
+    pub offset: (usize, usize),
 }
 
 #[derive(Deserialize)]
@@ -45,6 +46,7 @@ impl Default for Config {
             align_spaces: 2,
             display_package_manager: false,
             use_wmctrl: false,
+            offset: (0, 0),
             ascii: AsciiConfig::default(),
         }
     }

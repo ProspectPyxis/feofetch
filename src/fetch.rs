@@ -129,9 +129,20 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>)
         + conf.align_spaces;
 
     let mut stdout = stdout();
+
+    for _ in 0..conf.offset.1 {
+        stdout
+            .queue(Print('\n'))
+            .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+    }
+
     let mut ascii_lines = ascii.unwrap_or("").lines().peekable();
     let mut data_lines = data.iter().peekable();
     for index in 0..total_lines {
+        stdout
+            .queue(Print(" ".repeat(conf.offset.0)))
+            .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+
         if ascii_lines.peek().is_some() {
             stdout
                 .queue(PrintStyledContent(
