@@ -17,7 +17,7 @@ pub enum FetchType {
 pub struct Config {
     pub use_icons: bool,
     pub data: Vec<FetchType>,
-    pub align_spaces: u16,
+    pub align_spaces: usize,
     pub display_package_manager: bool,
     pub use_wmctrl: bool,
     pub ascii: AsciiConfig,
@@ -28,7 +28,7 @@ pub struct Config {
 pub struct AsciiConfig {
     pub print: bool,
     pub ascii_path: Option<String>,
-    pub align_spaces: u16,
+    pub align_spaces: usize,
 }
 
 impl Default for Config {

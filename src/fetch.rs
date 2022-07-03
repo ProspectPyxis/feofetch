@@ -3,9 +3,9 @@ use crate::{
     packages,
 };
 use crossterm::{
-    cursor::{MoveRight, RestorePosition, SavePosition},
     queue,
     style::{Print, PrintStyledContent, Stylize},
+    QueueableCommand,
 };
 use std::{env, io::stdout};
 use which::which;
@@ -98,18 +98,13 @@ impl FetchData {
         }
     }
 
-    pub fn queue_print(&self, data_pos: u16, ascii_padding: u16) {
+    pub fn queue_print(&self, data_pos: usize) {
         queue!(
             stdout(),
-            MoveRight(ascii_padding),
-            SavePosition,
-            PrintStyledContent(self.label.bold().cyan()),
-            RestorePosition,
-            MoveRight(data_pos),
+            PrintStyledContent(format!("{:data_pos$}", self.label).bold().cyan()),
             Print(&self.text),
-            Print("\n"),
         )
-        .unwrap();
+        .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
     }
 }
 
@@ -117,31 +112,42 @@ pub fn fetch_all(conf: &Config) -> Vec<FetchData> {
     conf.data.iter().map(|d| FetchData::get(d, conf)).collect()
 }
 
-pub fn print_all_fetches(
-    data: &[FetchData],
-    conf: &Config,
-    ascii_padding: u16,
-    ascii_lines: u16,
-) -> u16 {
-    let max_label_len = data.iter().fold(0, |acc, x| {
-        acc.max(
-            x.label
-                .chars()
-                .count()
-                .try_into()
-                .unwrap_or(u16::MAX - conf.align_spaces)
-                + conf.align_spaces,
-        )
-    });
-    let ascii_space_diff = ascii_lines.saturating_sub(data.len().try_into().unwrap_or(u16::MAX));
-    let data_top_padding = ascii_space_diff / 2;
-    let data_bottom_padding = ascii_space_diff / 2 + (ascii_space_diff % 2);
+pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>) {
+    let (ascii_lines_count, ascii_max_length) = match ascii {
+        Some(a) => (
+            a.lines().count(),
+            a.lines().fold(0, |acc, x| acc.max(x.chars().count())) + conf.ascii.align_spaces,
+        ),
+        None => (0, 0),
+    };
+    let data_start = (ascii_lines_count.saturating_sub(data.len()) / 2).min(ascii_lines_count);
+    let total_lines = ascii_lines_count.max(data.len());
 
-    let print_newline = |_| queue!(stdout(), Print("\n"),).unwrap();
-    (0..data_top_padding).for_each(&print_newline);
-    for d in data {
-        d.queue_print(max_label_len, ascii_padding);
+    let data_pos = data
+        .iter()
+        .fold(0, |acc, x| acc.max(x.label.chars().count()))
+        + conf.align_spaces;
+
+    let mut stdout = stdout();
+    let mut ascii_lines = ascii.unwrap_or("").lines().peekable();
+    let mut data_lines = data.iter().peekable();
+    for index in 0..total_lines {
+        if ascii_lines.peek().is_some() {
+            stdout
+                .queue(PrintStyledContent(
+                    format!("{:ascii_max_length$}", ascii_lines.next().unwrap()).bold(),
+                ))
+                .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+        } else {
+            stdout
+                .queue(Print(" ".repeat(ascii_max_length)))
+                .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+        }
+        if index >= data_start && data_lines.peek().is_some() {
+            data_lines.next().unwrap().queue_print(data_pos);
+        }
+        stdout
+            .queue(Print('\n'))
+            .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
     }
-    (0..data_bottom_padding).for_each(&print_newline);
-    data.len().try_into().unwrap_or(u16::MAX)
 }

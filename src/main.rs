@@ -14,18 +14,15 @@ fn main() {
     .unwrap();
 
     let conf = config::get_config(strategy.in_config_dir("config.toml"));
-    let (ascii_padding, ascii_lines) = if conf.ascii.print {
-        ascii::print_ascii(
-            match conf.ascii.ascii_path {
-                Some(ref path) => path.parse().unwrap(),
-                None => strategy.in_config_dir("ascii.txt"),
-            },
-            conf.ascii.align_spaces,
-        )
+    let ascii = if conf.ascii.print {
+        Some(ascii::load_raw_ascii(match conf.ascii.ascii_path {
+            Some(ref path) => path.parse().unwrap(),
+            None => strategy.in_config_dir("ascii.txt"),
+        }))
     } else {
-        (0, 0)
+        None
     };
 
     let data = fetch::fetch_all(&conf);
-    fetch::print_all_fetches(&data, &conf, ascii_padding, ascii_lines);
+    fetch::print_all_fetches(&data, &conf, ascii.as_deref());
 }
