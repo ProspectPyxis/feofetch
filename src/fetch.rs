@@ -7,7 +7,10 @@ use crossterm::{
     style::{Print, PrintStyledContent, Stylize},
     QueueableCommand,
 };
-use std::{env, io::{stdout, Stdout}};
+use std::{
+    env,
+    io::{self, stdout, Stdout},
+};
 use which::which;
 
 pub struct FetchData {
@@ -98,13 +101,12 @@ impl FetchData {
         }
     }
 
-    pub fn queue_print(&self, data_pos: usize, stdout: &mut Stdout) {
+    pub fn queue_print(&self, data_pos: usize, stdout: &mut Stdout) -> Result<(), io::Error> {
         queue!(
             stdout,
             PrintStyledContent(format!("{:data_pos$}", self.label).bold().cyan()),
             Print(&self.text),
         )
-        .expect("Unable to write to stdout");
     }
 }
 
@@ -112,7 +114,11 @@ pub fn fetch_all(conf: &Config) -> Vec<FetchData> {
     conf.data.iter().map(|d| FetchData::get(d, conf)).collect()
 }
 
-pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>) {
+pub fn print_all_fetches(
+    data: &[FetchData],
+    conf: &Config,
+    ascii: Option<&str>,
+) -> Result<(), io::Error> {
     let (ascii_lines_count, ascii_max_length) = match ascii {
         Some(a) => (
             a.lines().count(),
@@ -132,33 +138,31 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>)
 
     for _ in 0..conf.offset.1 {
         stdout
-            .queue(Print('\n'))
-            .expect("Unable to write to stdout");
+            .queue(Print('\n'))?;
     }
 
     let mut ascii_lines = ascii.unwrap_or("").lines().peekable();
     let mut data_lines = data.iter().peekable();
     for index in 0..total_lines {
-        stdout
-            .queue(Print(" ".repeat(conf.offset.0)))
-            .expect("Unable to write to stdout");
+        stdout.queue(Print(" ".repeat(conf.offset.0)))?;
 
         if ascii_lines.peek().is_some() {
-            stdout
-                .queue(PrintStyledContent(
-                    format!("{:ascii_max_length$}", ascii_lines.next().unwrap()).bold(),
-                ))
-                .expect("Unable to write to stdout");
+            stdout.queue(PrintStyledContent(
+                format!("{:ascii_max_length$}", ascii_lines.next().unwrap()).bold(),
+            ))?;
         } else {
-            stdout
-                .queue(Print(" ".repeat(ascii_max_length)))
-                .expect("Unable to write to stdout");
+            stdout.queue(Print(" ".repeat(ascii_max_length)))?;
         }
+
         if index >= data_start && data_lines.peek().is_some() {
-            data_lines.next().unwrap().queue_print(data_pos, &mut stdout);
+            data_lines
+                .next()
+                .unwrap()
+                .queue_print(data_pos, &mut stdout)?;
         }
-        stdout
-            .queue(Print('\n'))
-            .expect("Unable to write to stdout");
+
+        stdout.queue(Print('\n'))?;
     }
+
+    Ok(())
 }

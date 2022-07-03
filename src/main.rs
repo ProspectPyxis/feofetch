@@ -23,5 +23,5 @@ fn main() {
     };
 
     let data = fetch::fetch_all(&conf);
-    fetch::print_all_fetches(&data, &conf, ascii.as_deref());
+    fetch::print_all_fetches(&data, &conf, ascii.as_deref()).expect("Unable to write to stdout");
 }
