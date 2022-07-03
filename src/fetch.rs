@@ -15,6 +15,7 @@ use which::which;
 
 pub struct FetchData {
     pub label: &'static str,
+    pub icon: &'static str,
     text: String,
 }
 
@@ -23,10 +24,12 @@ impl FetchData {
         match data {
             FetchType::Os => FetchData {
                 label: "os",
+                icon: "",
                 text: config::get_os(),
             },
             FetchType::Version => FetchData {
                 label: "version",
+                icon: "",
                 text: {
                     let mut version =
                         sys_info::os_release().unwrap_or_else(|_| "unknown".to_string());
@@ -38,6 +41,7 @@ impl FetchData {
             },
             FetchType::Uptime => FetchData {
                 label: "uptime",
+                icon: "",
                 text: match uptime_lib::get() {
                     Ok(time) => {
                         let time = time.as_secs();
@@ -59,10 +63,12 @@ impl FetchData {
             },
             FetchType::Packages => FetchData {
                 label: "packages",
+                icon: "",
                 text: packages::get_packages(conf.display_package_manager),
             },
             FetchType::Wm => FetchData {
                 label: "wm",
+                icon: "",
                 text: {
                     let get_no_wmctrl = || match sys_info::os_type()
                         .unwrap_or_else(|_| "Unknown".to_string())
@@ -81,7 +87,9 @@ impl FetchData {
                                 .arg("-m")
                                 .output()
                                 .map_err(|_| ())?;
+
                             let s = std::str::from_utf8(&out.stdout).map_err(|_| ())?;
+
                             match s.lines().find(|x| x.starts_with("Name: ")) {
                                 Some(line) => {
                                     Ok(line.strip_prefix("Name: ").unwrap_or("error").to_string())
@@ -104,10 +112,21 @@ impl FetchData {
         }
     }
 
-    pub fn queue_print(&self, data_pos: usize, stdout: &mut Stdout) -> Result<(), io::Error> {
+    pub fn queue_print(
+        &self,
+        stdout: &mut Stdout,
+        data_pos: usize,
+        conf: &Config,
+    ) -> Result<(), io::Error> {
+        let label_text = if conf.use_icons {
+            self.icon
+        } else {
+            self.label
+        };
+
         queue!(
             stdout,
-            PrintStyledContent(format!("{:data_pos$}", self.label).bold().cyan()),
+            PrintStyledContent(format!("{:data_pos$}", label_text).bold().cyan()),
             Print(&self.text),
         )
     }
@@ -132,10 +151,12 @@ pub fn print_all_fetches(
     let data_start = (ascii_lines_count.saturating_sub(data.len()) / 2).min(ascii_lines_count);
     let total_lines = ascii_lines_count.max(data.len());
 
-    let data_pos = data
-        .iter()
-        .fold(0, |acc, x| acc.max(x.label.chars().count()))
-        + conf.align_spaces;
+    let data_pos = if !conf.use_icons {
+        data.iter()
+            .fold(0, |acc, x| acc.max(x.label.chars().count()))
+    } else {
+        1
+    } + conf.align_spaces;
 
     let mut stdout = stdout();
 
@@ -160,7 +181,7 @@ pub fn print_all_fetches(
             data_lines
                 .next()
                 .unwrap()
-                .queue_print(data_pos, &mut stdout)?;
+                .queue_print(&mut stdout, data_pos, conf)?;
         }
 
         stdout.queue(Print('\n'))?;
