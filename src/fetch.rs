@@ -104,7 +104,7 @@ impl FetchData {
             PrintStyledContent(format!("{:data_pos$}", self.label).bold().cyan()),
             Print(&self.text),
         )
-        .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+        .expect("Unable to write to stdout");
     }
 }
 
@@ -133,7 +133,7 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>)
     for _ in 0..conf.offset.1 {
         stdout
             .queue(Print('\n'))
-            .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+            .expect("Unable to write to stdout");
     }
 
     let mut ascii_lines = ascii.unwrap_or("").lines().peekable();
@@ -141,24 +141,24 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>)
     for index in 0..total_lines {
         stdout
             .queue(Print(" ".repeat(conf.offset.0)))
-            .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+            .expect("Unable to write to stdout");
 
         if ascii_lines.peek().is_some() {
             stdout
                 .queue(PrintStyledContent(
                     format!("{:ascii_max_length$}", ascii_lines.next().unwrap()).bold(),
                 ))
-                .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+                .expect("Unable to write to stdout");
         } else {
             stdout
                 .queue(Print(" ".repeat(ascii_max_length)))
-                .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+                .expect("Unable to write to stdout");
         }
         if index >= data_start && data_lines.peek().is_some() {
             data_lines.next().unwrap().queue_print(data_pos, &mut stdout);
         }
         stdout
             .queue(Print('\n'))
-            .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
+            .expect("Unable to write to stdout");
     }
 }
