@@ -187,5 +187,9 @@ pub fn print_all_fetches(
         stdout.queue(Print('\n'))?;
     }
 
+    for _ in 0..conf.padding_lines {
+        stdout.queue(Print('\n'))?;
+    }
+
     Ok(())
 }
