@@ -86,7 +86,7 @@ use_wmctrl = false
 
 [ascii]
 # Sets whether to print an ascii file or not.
-# Valid options: true, falsee
+# Valid options: true, false
 print = false
 
 # Sets the file to read the ascii art from.
