@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::{default::Default, fs::File, io::Read, path::PathBuf};
+use std::{default::Default, fs, path::PathBuf};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -73,24 +73,17 @@ pub fn get_os() -> String {
 }
 
 pub fn get_config(config_path: PathBuf) -> Config {
-    let config_file = File::open(config_path);
-    match config_file {
-        Ok(mut f) => {
-            let mut contents = String::new();
-            if let Err(e) = f.read_to_string(&mut contents) {
-                eprintln!("Error reading config file: {}", e);
-                eprintln!("Using default configuration instead");
-                return Config::default();
-            }
-            match toml::from_str(&contents) {
-                Ok(c) => c,
-                Err(e) => {
-                    eprintln!("Error parsing TOML config: {}", e);
-                    eprintln!("Using default configuration instead");
-                    Config::default()
-                }
-            }
-        }
-        Err(_) => Config::default(),
+    let throw_and_default = |msg, e: anyhow::Error| {
+        eprintln!("{}: {}", msg, e);
+        eprintln!("Falling back to default configuration");
+        Config::default()
+    };
+
+    match fs::read_to_string(config_path) {
+        Ok(config_str) => match toml::from_str(&config_str) {
+            Ok(c) => c,
+            Err(e) => throw_and_default("Unable to parse TOML config", e.into()),
+        },
+        Err(e) => throw_and_default("Unable to read config.toml file", e.into()),
     }
 }
