@@ -12,42 +12,38 @@ jobs:
   cargo-check:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
-      - name: setup rust toolchain
+      - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
           toolchain: stable
           override: true
-      - name: cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+      - run: cargo check
 
   release-github:
     needs: cargo-check
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
-      - name: release to github
+      - name: Release to github
         uses: softprops/action-gh-release@v1
   
   release-crates-io:
     needs: cargo-check
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
-      - name: setup rust toolchain
+      - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
         with:
+          profile: minimal
           toolchain: stable
           override: true
       - name: cargo publish
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --token ${CARGO_REGISTRY_TOKEN}
+        run: cargo publish --token ${CARGO_REGISTRY_TOKEN}
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
