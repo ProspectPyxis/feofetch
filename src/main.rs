@@ -1,4 +1,3 @@
-mod ascii;
 mod config;
 mod fetch;
 mod packages;
@@ -15,7 +14,7 @@ fn main() {
 
     let conf = config::get_config(strategy.in_config_dir("config.toml"));
     let ascii = if conf.ascii.print {
-        Some(ascii::load_raw_ascii(match conf.ascii.ascii_path {
+        Some(config::load_raw_ascii(match conf.ascii.ascii_path {
             Some(ref path) => path.parse().unwrap(),
             None => strategy.in_config_dir("ascii.txt"),
         }))
