@@ -7,7 +7,7 @@ use crossterm::{
     style::{Print, PrintStyledContent, Stylize},
     QueueableCommand,
 };
-use std::{env, io::stdout};
+use std::{env, io::{stdout, Stdout}};
 use which::which;
 
 pub struct FetchData {
@@ -98,9 +98,9 @@ impl FetchData {
         }
     }
 
-    pub fn queue_print(&self, data_pos: usize) {
+    pub fn queue_print(&self, data_pos: usize, stdout: &mut Stdout) {
         queue!(
-            stdout(),
+            stdout,
             PrintStyledContent(format!("{:data_pos$}", self.label).bold().cyan()),
             Print(&self.text),
         )
@@ -155,7 +155,7 @@ pub fn print_all_fetches(data: &[FetchData], conf: &Config, ascii: Option<&str>)
                 .unwrap_or_else(|e| panic!("Unable to write to stdout: {}", e));
         }
         if index >= data_start && data_lines.peek().is_some() {
-            data_lines.next().unwrap().queue_print(data_pos);
+            data_lines.next().unwrap().queue_print(data_pos, &mut stdout);
         }
         stdout
             .queue(Print('\n'))
