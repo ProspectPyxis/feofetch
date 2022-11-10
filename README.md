@@ -42,6 +42,16 @@ Just run `feofetch` in the terminal:
 feofetch
 ```
 
+The program also supports various command line flags.
+```
+Usage: feofetch [OPTIONS]
+
+Options:
+  -c, --config-path <CONFIG_PATH>  Override default config location with the specified path
+  -h, --help                       Print help information
+  -V, --version                    Print version information
+```
+
 ## Configuration
 
 This program reads configuration from `CONFIG_PATH/config.toml`. On MacOS and Linux, 
