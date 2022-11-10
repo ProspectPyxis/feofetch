@@ -1,7 +1,9 @@
+mod command_line;
 mod config;
 mod fetch;
 mod packages;
 
+use clap::Parser;
 use etcetera::app_strategy::{self, AppStrategy, AppStrategyArgs};
 
 fn main() {
@@ -12,7 +14,18 @@ fn main() {
     })
     .unwrap();
 
-    let conf = config::get_config(strategy.in_config_dir("config.toml"));
+    let args = command_line::Args::parse();
+    let conf = config::get_config(if let Some(path) = args.config_path {
+        match std::fs::canonicalize(&path) {
+            Ok(path) => path,
+            Err(e) => {
+                eprintln!("Error: Invalid config path {} ({})", path, e);
+                return;
+            }
+        }
+    } else {
+        strategy.in_config_dir("config.toml")
+    });
     let ascii = if conf.ascii.print {
         Some(config::load_raw_ascii(match conf.ascii.ascii_path {
             Some(ref path) => path.parse().unwrap(),
