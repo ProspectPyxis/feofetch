@@ -63,7 +63,7 @@ impl FetchData {
             FetchType::Packages => FetchData {
                 label: "packages",
                 icon: "",
-                text: packages::get_packages(conf.display_package_manager),
+                text: packages::get_packages(conf.packages.print_package_manager_names),
             },
             FetchType::Wm => FetchData {
                 label: "wm",
