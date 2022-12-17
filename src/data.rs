@@ -26,6 +26,7 @@ impl FetchData {
 				icon: "",
 				text: config::get_os(),
 			},
+
 			FetchType::Version => FetchData {
 				label: "version",
 				icon: "",
@@ -38,6 +39,7 @@ impl FetchData {
 					version
 				},
 			},
+
 			FetchType::Uptime => FetchData {
 				label: "uptime",
 				icon: "",
@@ -60,11 +62,13 @@ impl FetchData {
 					Err(_) => "unknown".to_string(),
 				},
 			},
+
 			FetchType::Packages => FetchData {
 				label: "packages",
 				icon: "",
 				text: packages::get_packages(conf.packages.print_package_manager_names),
 			},
+
 			FetchType::Wm => FetchData {
 				label: "wm",
 				icon: "",
@@ -106,8 +110,6 @@ impl FetchData {
 					}
 				},
 			},
-			#[allow(unreachable_patterns)]
-			_ => todo!(),
 		}
 	}
 
