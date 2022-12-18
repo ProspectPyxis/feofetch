@@ -107,18 +107,6 @@ impl Default for AsciiConfig {
 	}
 }
 
-pub fn get_os() -> String {
-	let os = sys_info::os_type().unwrap_or_else(|_| "Unknown".to_string());
-	if os.as_str() == "Linux" {
-		match sys_info::linux_os_release() {
-			Ok(info) => info.id.unwrap_or_else(|| "linux".to_string()),
-			Err(_) => "linux".to_string(),
-		}
-	} else {
-		os.to_lowercase()
-	}
-}
-
 pub fn get_config(config_path: PathBuf) -> Config {
 	let throw_and_default = |msg, e| {
 		eprintln!("{}: {}", msg, e);
@@ -136,14 +124,4 @@ pub fn get_config(config_path: PathBuf) -> Config {
 			_ => throw_and_default("Unable to read config.toml", e.to_string()),
 		},
 	}
-}
-
-pub fn load_raw_ascii(ascii_path: PathBuf) -> String {
-	fs::read_to_string(&ascii_path).unwrap_or_else(|e| {
-		panic!(
-			"Unable to read ascii file \"{}\": {}",
-			ascii_path.display(),
-			e
-		)
-	})
 }
