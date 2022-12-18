@@ -1,3 +1,4 @@
+use anyhow::Context;
 use clap::Parser;
 use serde::Deserialize;
 use std::{default::Default, fs, io::ErrorKind, path::PathBuf};
@@ -107,21 +108,25 @@ impl Default for AsciiConfig {
 	}
 }
 
-pub fn get_config(config_path: PathBuf) -> Config {
-	let throw_and_default = |msg, e| {
-		eprintln!("{}: {}", msg, e);
-		eprintln!("Falling back to default configuration");
-		Config::default()
-	};
-
-	match fs::read_to_string(config_path) {
-		Ok(config_str) => match toml::from_str(&config_str) {
-			Ok(c) => c,
-			Err(e) => throw_and_default("Unable to parse TOML config", e.to_string()),
-		},
+pub fn get_config(config_path: &PathBuf) -> anyhow::Result<Config> {
+	let config = match fs::read_to_string(config_path) {
+		Ok(config_str) => toml::from_str(&config_str).with_context(|| {
+			format!(
+				"Failed to parse config TOML at {}",
+				config_path.to_string_lossy()
+			)
+		})?,
 		Err(e) => match e.kind() {
 			ErrorKind::NotFound => Config::default(),
-			_ => throw_and_default("Unable to read config.toml", e.to_string()),
+			_ => {
+				return Err(e).with_context(|| {
+					format!(
+						"Failed to read config TOML from {}",
+						config_path.to_string_lossy()
+					)
+				})
+			}
 		},
-	}
+	};
+	Ok(config)
 }

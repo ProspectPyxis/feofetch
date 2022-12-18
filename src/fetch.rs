@@ -77,7 +77,8 @@ impl FetchData {
 			FetchType::Packages => FetchData {
 				label: "packages",
 				icon: "",
-				text: packages::get_packages(conf.packages.print_package_manager_names),
+				text: packages::get_packages(conf.packages.print_package_manager_names)
+					.unwrap_or_else(|_| "unknown".to_string()),
 			},
 
 			FetchType::Wm => FetchData {

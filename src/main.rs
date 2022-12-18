@@ -16,29 +16,40 @@ fn main() -> anyhow::Result<()> {
 	.context("Couldn't set up app strategy")?;
 
 	let args = config::Args::parse();
-	let conf = config::get_config(match args.config_path {
+	let config_path = match args.config_path {
 		Some(ref path) => {
 			if path.eq_ignore_ascii_case("default") {
 				strategy.in_config_dir("config.toml")
 			} else {
-				canonicalize(path)?
+				canonicalize(path)
+					.with_context(|| format!("Failed to parse config TOML path {}", path))?
 			}
 		}
 		None => strategy.in_config_dir("config.toml"),
-	})
-	.with_overrides(&args);
+	};
+	let conf = config::get_config(&config_path)
+		.with_context(|| {
+			format!(
+				"Failed to read config file {}",
+				config_path.to_string_lossy(),
+			)
+		})?
+		.with_overrides(&args);
 	let ascii_file = match conf.ascii.ascii_path {
 		Some(ref path) => path
 			.parse()
 			.with_context(|| format!("Failed to parse ascii path {}", path))?,
 		None => strategy.in_config_dir("ascii.txt"),
 	};
-	let ascii =
-		conf.ascii
-			.print
-			.then_some(read_to_string(&ascii_file).with_context(|| {
-				format!("Failed to read ascii file {}", ascii_file.to_string_lossy())
-			})?);
+	let ascii = conf
+		.ascii
+		.print
+		.then_some(read_to_string(&ascii_file).with_context(|| {
+			format!(
+				"Failed to read ascii file from {}",
+				ascii_file.to_string_lossy()
+			)
+		})?);
 
 	let data = fetch::fetch_all(&conf);
 	fetch::print_all_fetches(&data, &conf, ascii.as_deref())
