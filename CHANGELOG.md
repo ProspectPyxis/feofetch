@@ -22,6 +22,8 @@ and this project adheres to
   for this run.
 - `--padding-lines`/`-p` command line flag to override padding lines for this
   run.
+- Highly improved error handling - program should no longer panic other than in
+  catastrophic cases, thanks to implementing the `anyhow` crate
 
 ## [0.1.0] - 2022-07-03
 
