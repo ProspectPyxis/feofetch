@@ -41,6 +41,7 @@ enum ColorDef {
 	#[serde(rename = "normal")]
 	Reset,
 	Black,
+	#[serde(alias = "dark_gray")]
 	DarkGrey,
 	Red,
 	DarkRed,
@@ -55,6 +56,7 @@ enum ColorDef {
 	Cyan,
 	DarkCyan,
 	White,
+	#[serde(alias = "gray")]
 	Grey,
 }
 
