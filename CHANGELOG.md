@@ -23,14 +23,14 @@ and this project adheres to
 - `--padding-lines`/`-p` command line flag to override padding lines for this
   run.
 - Highly improved error handling - program should no longer panic other than in
-  catastrophic cases, thanks to implementing the `anyhow` crate
+  catastrophic cases, thanks to implementing the `anyhow` crate.
 - New data options: `shell`, `terminal`.
-- `label_color` and `ascii.color` config options that supports all ANSI colors
+- `label_color` and `ascii.color` config options that supports all ANSI colors.
 
 ### Changed
 
 - Better icons for `os` data type - now shows the appropriate logo for Windows,
-  Mac, and Linux for its icons
+  Mac, and Linux for its icons.
 
 ## [0.1.0] - 2022-07-03
 
