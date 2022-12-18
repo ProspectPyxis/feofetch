@@ -63,10 +63,10 @@ enum ColorDef {
 #[derive(Deserialize)]
 #[serde(default)]
 pub struct Config {
+	pub data: Vec<FetchType>,
 	pub use_icons: bool,
 	#[serde(with = "ColorDef")]
 	pub label_color: Color,
-	pub data: Vec<FetchType>,
 	pub align_spaces: usize,
 	pub offset: (usize, usize),
 	pub padding_lines: usize,
@@ -79,9 +79,9 @@ pub struct Config {
 #[serde(default)]
 pub struct AsciiConfig {
 	pub print: bool,
+	pub ascii_path: Option<String>,
 	#[serde(with = "ColorDef")]
 	pub color: Color,
-	pub ascii_path: Option<String>,
 	pub align_spaces: usize,
 }
 
@@ -100,8 +100,6 @@ pub struct WmConfig {
 impl Default for Config {
 	fn default() -> Self {
 		Config {
-			use_icons: false,
-			label_color: Color::Cyan,
 			data: vec![
 				FetchType::Os,
 				FetchType::Version,
@@ -109,6 +107,8 @@ impl Default for Config {
 				FetchType::Packages,
 				FetchType::Wm,
 			],
+			use_icons: false,
+			label_color: Color::Cyan,
 			align_spaces: 2,
 			offset: (0, 0),
 			padding_lines: 1,
@@ -136,8 +136,8 @@ impl Default for AsciiConfig {
 	fn default() -> Self {
 		AsciiConfig {
 			print: false,
-			color: Color::Reset,
 			ascii_path: None,
+			color: Color::Reset,
 			align_spaces: 2,
 		}
 	}
