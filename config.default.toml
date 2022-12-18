@@ -1,0 +1,18 @@
+data = ["os", "version", "uptime", "packages", "wm"]
+use_icons = true
+label_color = "cyan"
+align_spaces = 2
+offset = [0, 0]
+padding_lines = 1
+
+[ascii]
+print = false
+ascii_path = "CONFIG_PATH/ascii.txt"
+color = "normal"
+align_spaces = 2
+
+[packages]
+print_package_manager_names = false
+
+[wm]
+use_wmctrl = false
