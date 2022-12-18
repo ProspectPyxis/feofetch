@@ -25,6 +25,11 @@ and this project adheres to
 - Highly improved error handling - program should no longer panic other than in
   catastrophic cases, thanks to implementing the `anyhow` crate
 
+### Changed
+
+- Better icons for `os` data type - now shows the appropriate logo for Windows,
+  Mac, and Linux for its icons
+
 ## [0.1.0] - 2022-07-03
 
 ### Added

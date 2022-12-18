@@ -22,21 +22,28 @@ pub struct FetchData {
 impl FetchData {
 	pub fn get(data: &FetchType, conf: &Config) -> Self {
 		match data {
-			FetchType::Os => FetchData {
-				label: "os",
-				icon: "",
-				text: {
-					let os = sys_info::os_type().unwrap_or_else(|_| "Unknown".to_string());
-					if os.as_str() == "Linux" {
-						match sys_info::linux_os_release() {
-							Ok(info) => info.id.unwrap_or_else(|| "linux".to_string()),
-							Err(_) => "linux".to_string(),
-						}
-					} else {
-						os.to_lowercase()
+			FetchType::Os => {
+				let os = sys_info::os_type().unwrap_or_else(|_| "Unknown".to_string());
+				let os_str = if os.as_str() == "Linux" {
+					match sys_info::linux_os_release() {
+						Ok(info) => info.id.unwrap_or_else(|| "linux".to_string()),
+						Err(_) => "linux".to_string(),
 					}
-				},
-			},
+				} else {
+					os.to_lowercase()
+				};
+
+				FetchData {
+					label: "os",
+					icon: match os.as_str() {
+						"Linux" => "",
+						"Darwin" => "",
+						"Windows" => "",
+						_ => "",
+					},
+					text: os_str,
+				}
+			}
 
 			FetchType::Version => FetchData {
 				label: "version",
