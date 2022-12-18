@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.2.0] - 2022-12-18
+
 ### Breaking Changes
 
 - Restructured config file - split options specific to data types to its own
