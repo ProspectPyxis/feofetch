@@ -1,4 +1,3 @@
-mod command_line;
 mod config;
 mod data;
 mod fetch;
@@ -17,7 +16,7 @@ fn main() {
 
 	let args = config::Args::parse();
 	let conf = config::get_config(if let Some(ref path) = args.config_path {
-		match std::fs::canonicalize(&path) {
+		match std::fs::canonicalize(path) {
 			Ok(path) => path,
 			Err(e) => {
 				eprintln!("Error: Invalid config path {} ({})", path, e);
