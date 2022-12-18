@@ -30,43 +30,38 @@ const PACKAGE_MANAGERS: &[PacManData] = &[
 	},
 ];
 
-const STDOUT_PARSE_FAIL_MSG: &str =
-	"Assuming 0 packages installed by this package manager and moving on";
+fn try_get_package_count(pacman: &PacManData) -> anyhow::Result<usize> {
+	let out = std::process::Command::new(pacman.cmd_name)
+		.args(pacman.args)
+		.output()
+		.with_context(|| {
+			format!(
+				"Failed to get stdout while running command {}",
+				pacman.cmd_name
+			)
+		})?;
+
+	let packages_count = std::str::from_utf8(&out.stdout).with_context(|| {
+		format!(
+			"Failed to parse stdout of command {} to string",
+			pacman.cmd_name
+		)
+	})?;
+
+	Ok(packages_count.lines().count())
+}
 
 pub fn get_packages(display_package_manager: bool) -> String {
 	let packages_count = PACKAGE_MANAGERS
 		.iter()
 		.filter(|pacman| which(pacman.check_name).is_ok())
 		.fold(0, |accum, pacman| {
-			let out = std::process::Command::new(pacman.cmd_name)
-				.args(pacman.args)
-				.output()
-				.with_context(|| {
-					format!(
-						"Failed to get stdout while running command {}",
-						pacman.cmd_name
-					)
-				});
-			match out {
-				Ok(o) => match std::str::from_utf8(&o.stdout).with_context(|| {
-					format!(
-						"Failed to parse stdout of command {} to string",
-						pacman.cmd_name
-					)
-				}) {
-					Ok(p) => accum + p.lines().count(),
-					Err(e) => {
-						eprintln!("{:#}", e);
-						eprintln!("{}", STDOUT_PARSE_FAIL_MSG);
-						accum
-					}
-				},
-				Err(e) => {
+			accum
+				+ try_get_package_count(pacman).unwrap_or_else(|e| {
 					eprintln!("{:#}", e);
-					eprintln!("{}", STDOUT_PARSE_FAIL_MSG);
-					accum
-				}
-			}
+					eprintln!("Assuming 0 packages installed by this package manager, moving on");
+					0
+				})
 		});
 	let pacmans: Vec<&'static str> = PACKAGE_MANAGERS
 		.iter()
