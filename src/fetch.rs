@@ -174,7 +174,11 @@ impl FetchData {
 
 		queue!(
 			stdout,
-			PrintStyledContent(format!("{:data_pos$}", label_text).bold().cyan()),
+			PrintStyledContent(
+				format!("{:data_pos$}", label_text)
+					.bold()
+					.with(conf.label_color)
+			),
 			Print(&self.text),
 		)
 	}

@@ -25,6 +25,7 @@ and this project adheres to
 - Highly improved error handling - program should no longer panic other than in
   catastrophic cases, thanks to implementing the `anyhow` crate
 - New data options: `shell`, `terminal`.
+- `label_color` config option that supports all ANSI colors
 
 ### Changed
 

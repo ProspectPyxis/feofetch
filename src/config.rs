@@ -1,5 +1,6 @@
 use anyhow::Context;
 use clap::Parser;
+use crossterm::style::Color;
 use serde::Deserialize;
 use std::{default::Default, fs, io::ErrorKind, path::PathBuf};
 
@@ -34,9 +35,33 @@ pub enum FetchType {
 }
 
 #[derive(Deserialize)]
+#[serde(remote = "Color")]
+#[serde(rename_all = "snake_case")]
+enum ColorDef {
+	Black,
+	DarkGrey,
+	Red,
+	DarkRed,
+	Green,
+	DarkGreen,
+	Yellow,
+	DarkYellow,
+	Blue,
+	DarkBlue,
+	Magenta,
+	DarkMagenta,
+	Cyan,
+	DarkCyan,
+	White,
+	Grey,
+}
+
+#[derive(Deserialize)]
 #[serde(default)]
 pub struct Config {
 	pub use_icons: bool,
+	#[serde(with = "ColorDef")]
+	pub label_color: Color,
 	pub data: Vec<FetchType>,
 	pub align_spaces: usize,
 	pub offset: (usize, usize),
@@ -70,6 +95,7 @@ impl Default for Config {
 	fn default() -> Self {
 		Config {
 			use_icons: false,
+			label_color: Color::Cyan,
 			data: vec![
 				FetchType::Os,
 				FetchType::Version,
