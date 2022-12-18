@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
 		author: "ProspectPyxis".to_string(),
 		app_name: "feofetch".to_string(),
 	})
-	.context("Couldn't set up app strategy")?;
+	.context("Failed to set up app strategy")?;
 
 	let args = config::Args::parse();
 	let config_path = match args.config_path {
@@ -53,7 +53,7 @@ fn main() -> anyhow::Result<()> {
 
 	let data = fetch::fetch_all(&conf);
 	fetch::print_all_fetches(&data, &conf, ascii.as_deref())
-		.context("Unable to write to stdout")?;
+		.context("Failed to write to stdout")?;
 
 	Ok(())
 }
