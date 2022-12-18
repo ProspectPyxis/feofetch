@@ -1,6 +1,20 @@
-use crate::command_line::Args;
+use clap::Parser;
 use serde::Deserialize;
 use std::{default::Default, fs, io::ErrorKind, path::PathBuf};
+
+#[derive(Parser)]
+#[command(version, about)]
+pub struct Args {
+	/// Override default config location with the specified path
+	#[arg(short, long)]
+	pub config_path: Option<String>,
+	/// Set x-offset to this number, overriding config
+	#[arg(short, long)]
+	pub x_offset: Option<usize>,
+	/// Set y-offset to this number, overriding config
+	#[arg(short, long)]
+	pub y_offset: Option<usize>,
+}
 
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]

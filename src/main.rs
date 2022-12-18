@@ -15,7 +15,7 @@ fn main() {
 	})
 	.unwrap();
 
-	let args = command_line::Args::parse();
+	let args = config::Args::parse();
 	let conf = config::get_config(if let Some(ref path) = args.config_path {
 		match std::fs::canonicalize(&path) {
 			Ok(path) => path,
