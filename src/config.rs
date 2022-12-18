@@ -36,11 +36,11 @@ pub struct Config {
 	pub use_icons: bool,
 	pub data: Vec<FetchType>,
 	pub align_spaces: usize,
-	pub use_wmctrl: bool,
 	pub offset: (usize, usize),
 	pub padding_lines: usize,
 	pub ascii: AsciiConfig,
 	pub packages: PackagesConfig,
+	pub wm: WmConfig,
 }
 
 #[derive(Deserialize)]
@@ -57,6 +57,12 @@ pub struct PackagesConfig {
 	pub print_package_manager_names: bool,
 }
 
+#[derive(Default, Deserialize)]
+#[serde(default)]
+pub struct WmConfig {
+	pub use_wmctrl: bool,
+}
+
 impl Default for Config {
 	fn default() -> Self {
 		Config {
@@ -69,11 +75,11 @@ impl Default for Config {
 				FetchType::Wm,
 			],
 			align_spaces: 2,
-			use_wmctrl: false,
 			offset: (0, 0),
 			padding_lines: 1,
 			ascii: AsciiConfig::default(),
 			packages: PackagesConfig::default(),
+			wm: WmConfig::default(),
 		}
 	}
 }

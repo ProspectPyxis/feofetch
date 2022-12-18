@@ -84,7 +84,7 @@ impl FetchData {
 						_ => "unknown".to_string(),
 					};
 
-					if conf.use_wmctrl && which("wmctrl").is_ok() {
+					if conf.wm.use_wmctrl && which("wmctrl").is_ok() {
 						let try_get_wmctrl = || -> Result<String, ()> {
 							let out = std::process::Command::new("wmctrl")
 								.arg("-m")
