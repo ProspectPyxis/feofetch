@@ -24,7 +24,7 @@ and this project adheres to
   run.
 - Highly improved error handling - program should no longer panic other than in
   catastrophic cases, thanks to implementing the `anyhow` crate
-- New data option: `shell`
+- New data options: `shell`, `terminal`.
 
 ### Changed
 

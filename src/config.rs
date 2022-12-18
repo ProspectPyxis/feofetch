@@ -30,6 +30,7 @@ pub enum FetchType {
 	Packages,
 	Wm,
 	Shell,
+	Terminal,
 }
 
 #[derive(Deserialize)]

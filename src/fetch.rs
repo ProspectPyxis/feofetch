@@ -144,6 +144,19 @@ impl FetchData {
 					}
 				},
 			},
+			FetchType::Terminal => FetchData {
+				label: "terminal",
+				icon: "",
+				text: {
+					match env::var("TERM_PROGRAM") {
+						Ok(term) => match term.strip_suffix(".app") {
+							Some(term) => term.to_string(),
+							None => term,
+						},
+						Err(_) => "unknown".to_string(),
+					}
+				},
+			},
 		}
 	}
 
