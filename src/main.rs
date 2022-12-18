@@ -16,11 +16,15 @@ fn main() {
 
 	let args = config::Args::parse();
 	let conf = config::get_config(if let Some(ref path) = args.config_path {
-		match std::fs::canonicalize(path) {
-			Ok(path) => path,
-			Err(e) => {
-				eprintln!("Error: Invalid config path {} ({})", path, e);
-				return;
+		if path.eq_ignore_ascii_case("default") {
+			strategy.in_config_dir("config.toml")
+		} else {
+			match std::fs::canonicalize(path) {
+				Ok(path) => path,
+				Err(e) => {
+					eprintln!("Error: Invalid config path {} ({})", path, e);
+					return;
+				}
 			}
 		}
 	} else {
