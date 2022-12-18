@@ -14,6 +14,9 @@ pub struct Args {
 	/// Set y-offset to this number, overriding config
 	#[arg(short, long)]
 	pub y_offset: Option<usize>,
+	/// Set padding lines to this number, overriding config
+	#[arg(short, long)]
+	pub padding_lines: Option<usize>,
 }
 
 #[derive(Deserialize)]
@@ -82,6 +85,7 @@ impl Config {
 				args.x_offset.unwrap_or(self.offset.0),
 				args.y_offset.unwrap_or(self.offset.1),
 			),
+			padding_lines: args.padding_lines.unwrap_or(self.padding_lines),
 			..self
 		}
 	}

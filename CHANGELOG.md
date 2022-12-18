@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
 - Command line flags: `--help`, `--version`
 - `--config-path`/`-c` command line flag to set an alternate config path for one execution
 - `--x-offset`/`-x` and `--y-offset`/`-y` command line flags fo override offsets for this run
+- `--padding-lines`/`-p` command line flag to override padding lines for this run
 
 ## [0.1.0] - 2022-07-03
 
