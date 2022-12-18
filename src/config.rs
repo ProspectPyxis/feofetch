@@ -1,3 +1,4 @@
+use crate::command_line::Args;
 use serde::Deserialize;
 use std::{default::Default, fs, io::ErrorKind, path::PathBuf};
 
@@ -56,6 +57,18 @@ impl Default for Config {
 			padding_lines: 1,
 			ascii: AsciiConfig::default(),
 			packages: PackagesConfig::default(),
+		}
+	}
+}
+
+impl Config {
+	pub fn with_overrides(self, args: &Args) -> Self {
+		Config {
+			offset: (
+				args.x_offset.unwrap_or(self.offset.0),
+				args.y_offset.unwrap_or(self.offset.1),
+			),
+			..self
 		}
 	}
 }

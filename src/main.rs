@@ -16,7 +16,7 @@ fn main() {
 	.unwrap();
 
 	let args = command_line::Args::parse();
-	let conf = config::get_config(if let Some(path) = args.config_path {
+	let conf = config::get_config(if let Some(ref path) = args.config_path {
 		match std::fs::canonicalize(&path) {
 			Ok(path) => path,
 			Err(e) => {
@@ -26,7 +26,8 @@ fn main() {
 		}
 	} else {
 		strategy.in_config_dir("config.toml")
-	});
+	})
+	.with_overrides(&args);
 	let ascii = if conf.ascii.print {
 		Some(config::load_raw_ascii(match conf.ascii.ascii_path {
 			Some(ref path) => path.parse().unwrap(),
