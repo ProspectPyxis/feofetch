@@ -223,7 +223,9 @@ pub fn print_all_fetches(
 
 		if ascii_lines.peek().is_some() {
 			stdout.queue(PrintStyledContent(
-				format!("{:ascii_max_length$}", ascii_lines.next().unwrap()).bold(),
+				format!("{:ascii_max_length$}", ascii_lines.next().unwrap())
+					.bold()
+					.with(conf.ascii.color),
 			))?;
 		} else {
 			stdout.queue(Print(" ".repeat(ascii_max_length)))?;

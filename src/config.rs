@@ -38,6 +38,8 @@ pub enum FetchType {
 #[serde(remote = "Color")]
 #[serde(rename_all = "snake_case")]
 enum ColorDef {
+	#[serde(rename = "normal")]
+	Reset,
 	Black,
 	DarkGrey,
 	Red,
@@ -75,6 +77,8 @@ pub struct Config {
 #[serde(default)]
 pub struct AsciiConfig {
 	pub print: bool,
+	#[serde(with = "ColorDef")]
+	pub color: Color,
 	pub ascii_path: Option<String>,
 	pub align_spaces: usize,
 }
@@ -130,6 +134,7 @@ impl Default for AsciiConfig {
 	fn default() -> Self {
 		AsciiConfig {
 			print: false,
+			color: Color::Reset,
 			ascii_path: None,
 			align_spaces: 2,
 		}
