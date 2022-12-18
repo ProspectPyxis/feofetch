@@ -29,6 +29,7 @@ pub enum FetchType {
 	Uptime,
 	Packages,
 	Wm,
+	Shell,
 }
 
 #[derive(Deserialize)]
