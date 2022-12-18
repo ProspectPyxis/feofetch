@@ -4,18 +4,20 @@ Yet another (x)fetch tool, written in rust with cross-platform in mind.
 
 ## Note on cross-platform
 
-This program was written specifically with cross-platform libraries, so in theory, 
-this should compile and run on Windows, MacOS, and Linux. However, this program 
-so far has only been tested on Linux, and a lot of functionality will be missing
-on other OSes.
+This program was written specifically with cross-platform libraries, so in
+theory, this should compile and run on Windows, MacOS, and Linux. However, this
+program so far has only been tested on Linux, and a lot of functionality will be
+missing on other OSes.
 
-Any feature requests, bug reports, or pull requests regarding this are very welcome!
+Any feature requests, bug reports, or pull requests regarding this are very
+welcome!
 
 ## Installation
 
 ### With cargo
 
-`feofetch` can be installed with [cargo](https:#www.rust-lang.org/tools/install).
+`feofetch` can be installed with
+[cargo](https:#www.rust-lang.org/tools/install).
 
 ```sh
 cargo install feofetch
@@ -23,7 +25,7 @@ cargo install feofetch
 
 ### Build from source
 
-If you want the latest build, you can build directly from source. This requires 
+If you want the latest build, you can build directly from source. This requires
 [rust](https:#www.rust-lang.org/tools/install) to be installed on your system.
 
 ```sh
@@ -43,6 +45,7 @@ feofetch
 ```
 
 The program also supports various command line flags.
+
 ```
 Usage: feofetch [OPTIONS]
 
@@ -54,11 +57,12 @@ Options:
 
 ## Configuration
 
-This program reads configuration from `CONFIG_PATH/config.toml`. On MacOS and Linux, 
-`CONFIG_PATH` is at `$HOME/.config/feofetch`, while on Windows, it is at 
+This program reads configuration from `CONFIG_PATH/config.toml`. On MacOS and
+Linux, `CONFIG_PATH` is at `$HOME/.config/feofetch`, while on Windows, it is at
 `%APPDATA%/ProspectPyxis/feofetch/config`.
 
-Any option can be omitted, in which case it will fall back to the default as described below.
+Any option can be omitted, in which case it will fall back to the default as
+described below.
 
 ```toml
 # If this option is set to `true`, the data names will be replaced with a Nerd Font icon.
@@ -116,5 +120,6 @@ Any pull requests, issues, or feature requests are welcome!
 
 ## License
 
-This project is licensed under either of [Apache License, Version 2.0](LICENSE-APACHE.md) 
-or [MIT License](LICENSE-MIT.md), at your option.
+This project is licensed under either of
+[Apache License, Version 2.0](LICENSE-APACHE.md) or
+[MIT License](LICENSE-MIT.md), at your option.
