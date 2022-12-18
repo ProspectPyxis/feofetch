@@ -1,5 +1,4 @@
 mod config;
-mod data;
 mod fetch;
 mod packages;
 
@@ -40,6 +39,6 @@ fn main() {
 		None
 	};
 
-	let data = data::fetch_all(&conf);
+	let data = fetch::fetch_all(&conf);
 	fetch::print_all_fetches(&data, &conf, ascii.as_deref()).expect("Unable to write to stdout");
 }
