@@ -1,3 +1,4 @@
+mod args;
 mod config;
 mod fetch;
 mod packages;
@@ -15,7 +16,7 @@ fn main() -> anyhow::Result<()> {
 	})
 	.context("Failed to set up app strategy")?;
 
-	let args = config::Args::parse();
+	let args = args::Args::parse();
 	let config_path = match args.config_path {
 		Some(ref path) => {
 			if path.eq_ignore_ascii_case("default") {
