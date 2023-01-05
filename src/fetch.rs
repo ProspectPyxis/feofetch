@@ -202,7 +202,8 @@ pub fn print_all_fetches(
 		),
 		None => (0, 0),
 	};
-	let data_start = (ascii_lines_count.saturating_sub(data.len()) / 2).min(ascii_lines_count);
+	let data_start = ascii_lines_count.saturating_sub(data.len()) / 2;
+	let ascii_start = data.len().saturating_sub(ascii_lines_count) / 2;
 	let total_lines = ascii_lines_count.max(data.len());
 
 	let data_pos = if !conf.use_icons {
@@ -223,14 +224,18 @@ pub fn print_all_fetches(
 	for index in 0..total_lines {
 		stdout.queue(Print(" ".repeat(conf.offset.0)))?;
 
-		match ascii_lines.next() {
-			Some(line) => stdout.queue(PrintStyledContent(
-				format!("{line:ascii_max_length$}")
-					.bold()
-					.with(conf.ascii.color),
-			))?,
-			None => stdout.queue(Print(" ".repeat(ascii_max_length)))?,
-		};
+		if index >= ascii_start {
+			match ascii_lines.next() {
+				Some(line) => stdout.queue(PrintStyledContent(
+					format!("{line:ascii_max_length$}")
+						.bold()
+						.with(conf.ascii.color),
+				))?,
+				None => stdout.queue(Print(" ".repeat(ascii_max_length)))?,
+			};
+		} else {
+			stdout.queue(Print(" ".repeat(ascii_max_length)))?;
+		}
 
 		if index >= data_start {
 			if let Some(line) = data_lines.next() {

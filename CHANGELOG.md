@@ -12,6 +12,11 @@ and this project adheres to
 
 - `--no-color`/`-C` command line flag to strip all colors from the output
 
+### Changed
+
+- ASCII text that has less lines than the amount of data types is now centered
+  vertically
+
 ## [0.2.0] - 2022-12-18
 
 ### Breaking Changes
