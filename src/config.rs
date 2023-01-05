@@ -105,11 +105,24 @@ impl Default for Config {
 impl Config {
 	pub fn with_overrides(self, args: &Args) -> Self {
 		Config {
+			label_color: if args.no_color {
+				Color::Reset
+			} else {
+				self.label_color
+			},
 			offset: (
 				args.x_offset.unwrap_or(self.offset.0),
 				args.y_offset.unwrap_or(self.offset.1),
 			),
 			padding_lines: args.padding_lines.unwrap_or(self.padding_lines),
+			ascii: AsciiConfig {
+				color: if args.no_color {
+					Color::Reset
+				} else {
+					self.ascii.color
+				},
+				..self.ascii
+			},
 			..self
 		}
 	}
