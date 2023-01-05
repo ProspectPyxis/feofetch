@@ -127,6 +127,7 @@ impl FetchData {
 					}
 				},
 			},
+
 			FetchType::Shell => FetchData {
 				label: "shell",
 				icon: "",
@@ -143,6 +144,7 @@ impl FetchData {
 					}
 				},
 			},
+
 			FetchType::Terminal => FetchData {
 				label: "terminal",
 				icon: "",
