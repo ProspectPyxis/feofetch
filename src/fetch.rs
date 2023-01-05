@@ -167,18 +167,19 @@ impl FetchData {
 		data_pos: usize,
 		conf: &Config,
 	) -> Result<(), io::Error> {
-		let label_text = if conf.use_icons {
-			self.icon
-		} else {
-			self.label
-		};
-
 		queue!(
 			stdout,
 			PrintStyledContent(
-				format!("{:data_pos$}", label_text)
-					.bold()
-					.with(conf.label_color)
+				format!(
+					"{:data_pos$}",
+					if conf.use_icons {
+						self.icon
+					} else {
+						self.label
+					}
+				)
+				.bold()
+				.with(conf.label_color)
 			),
 			Print(&self.text),
 		)
