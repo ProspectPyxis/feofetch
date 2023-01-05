@@ -216,26 +216,24 @@ pub fn print_all_fetches(
 		stdout.queue(Print('\n'))?;
 	}
 
-	let mut ascii_lines = ascii.unwrap_or("").lines().peekable();
-	let mut data_lines = data.iter().peekable();
+	let mut ascii_lines = ascii.unwrap_or("").lines();
+	let mut data_lines = data.iter();
 	for index in 0..total_lines {
 		stdout.queue(Print(" ".repeat(conf.offset.0)))?;
 
-		if ascii_lines.peek().is_some() {
-			stdout.queue(PrintStyledContent(
-				format!("{:ascii_max_length$}", ascii_lines.next().unwrap())
+		match ascii_lines.next() {
+			Some(line) => stdout.queue(PrintStyledContent(
+				format!("{line:ascii_max_length$}")
 					.bold()
 					.with(conf.ascii.color),
-			))?;
-		} else {
-			stdout.queue(Print(" ".repeat(ascii_max_length)))?;
-		}
+			))?,
+			None => stdout.queue(Print(" ".repeat(ascii_max_length)))?,
+		};
 
-		if index >= data_start && data_lines.peek().is_some() {
-			data_lines
-				.next()
-				.unwrap()
-				.queue_print(&mut stdout, data_pos, conf)?;
+		if index >= data_start {
+			if let Some(line) = data_lines.next() {
+				line.queue_print(&mut stdout, data_pos, conf)?;
+			}
 		}
 
 		stdout.queue(Print('\n'))?;
