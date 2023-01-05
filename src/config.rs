@@ -1,8 +1,8 @@
 use crate::args::Args;
 use anyhow::Context;
-use crossterm::style::Color;
 use serde::Deserialize;
 use std::{default::Default, fs, io::ErrorKind, path::PathBuf};
+use termcolor::Color;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -17,12 +17,10 @@ pub enum FetchType {
 	Terminal,
 }
 
-#[derive(Deserialize)]
-#[serde(remote = "Color")]
+#[derive(Deserialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
-enum ColorDef {
-	#[serde(rename = "normal")]
-	Reset,
+pub enum ColorConfig {
+	Normal,
 	Black,
 	#[serde(alias = "dark_gray")]
 	DarkGrey,
@@ -48,8 +46,7 @@ enum ColorDef {
 pub struct Config {
 	pub data: Vec<FetchType>,
 	pub use_icons: bool,
-	#[serde(with = "ColorDef")]
-	pub label_color: Color,
+	pub label_color: ColorConfig,
 	pub align_spaces: usize,
 	pub offset: (usize, usize),
 	pub padding_lines: usize,
@@ -63,8 +60,7 @@ pub struct Config {
 pub struct AsciiConfig {
 	pub print: bool,
 	pub ascii_path: Option<String>,
-	#[serde(with = "ColorDef")]
-	pub color: Color,
+	pub color: ColorConfig,
 	pub align_spaces: usize,
 }
 
@@ -80,6 +76,37 @@ pub struct WmConfig {
 	pub use_wmctrl: bool,
 }
 
+impl ColorConfig {
+	pub fn get_color(&self) -> Option<Color> {
+		match self {
+			ColorConfig::Normal => None,
+			ColorConfig::Black | ColorConfig::DarkGrey => Some(Color::Black),
+			ColorConfig::Red | ColorConfig::DarkRed => Some(Color::Red),
+			ColorConfig::Green | ColorConfig::DarkGreen => Some(Color::Green),
+			ColorConfig::Yellow | ColorConfig::DarkYellow => Some(Color::Yellow),
+			ColorConfig::Blue | ColorConfig::DarkBlue => Some(Color::Blue),
+			ColorConfig::Magenta | ColorConfig::DarkMagenta => Some(Color::Magenta),
+			ColorConfig::Cyan | ColorConfig::DarkCyan => Some(Color::Cyan),
+			ColorConfig::White | ColorConfig::Grey => Some(Color::White),
+		}
+	}
+
+	pub fn is_intense(&self) -> bool {
+		let bright_colors = [
+			ColorConfig::DarkGrey,
+			ColorConfig::Red,
+			ColorConfig::Green,
+			ColorConfig::Yellow,
+			ColorConfig::Blue,
+			ColorConfig::Magenta,
+			ColorConfig::Cyan,
+			ColorConfig::White,
+		];
+
+		bright_colors.contains(self)
+	}
+}
+
 impl Default for Config {
 	fn default() -> Self {
 		Config {
@@ -91,7 +118,7 @@ impl Default for Config {
 				FetchType::Wm,
 			],
 			use_icons: false,
-			label_color: Color::Cyan,
+			label_color: ColorConfig::Cyan,
 			align_spaces: 2,
 			offset: (0, 0),
 			padding_lines: 1,
@@ -120,7 +147,7 @@ impl Default for AsciiConfig {
 		AsciiConfig {
 			print: false,
 			ascii_path: None,
-			color: Color::Reset,
+			color: ColorConfig::Normal,
 			align_spaces: 2,
 		}
 	}

@@ -2,15 +2,11 @@ use crate::{
 	config::{Config, FetchType},
 	packages,
 };
-use crossterm::{
-	queue,
-	style::{Print, PrintStyledContent, Stylize},
-	QueueableCommand,
-};
 use std::{
 	env,
-	io::{self, stdout, Stdout},
+	io::{self, Write},
 };
+use termcolor::{ColorChoice, ColorSpec, StandardStream, WriteColor};
 use which::which;
 
 pub struct FetchData {
@@ -163,26 +159,28 @@ impl FetchData {
 
 	pub fn queue_print(
 		&self,
-		stdout: &mut Stdout,
+		stdout: &mut StandardStream,
 		data_pos: usize,
 		conf: &Config,
 	) -> Result<(), io::Error> {
-		queue!(
+		stdout.set_color(
+			ColorSpec::new()
+				.set_fg(conf.label_color.get_color())
+				.set_intense(conf.label_color.is_intense())
+				.set_bold(true),
+		)?;
+		write!(
 			stdout,
-			PrintStyledContent(
-				format!(
-					"{:data_pos$}",
-					if conf.use_icons {
-						self.icon
-					} else {
-						self.label
-					}
-				)
-				.bold()
-				.with(conf.label_color)
-			),
-			Print(&self.text),
-		)
+			"{:data_pos$}",
+			if conf.use_icons {
+				self.icon
+			} else {
+				self.label
+			},
+		)?;
+		stdout.set_color(&ColorSpec::new())?;
+		write!(stdout, "{}", self.text)?;
+		Ok(())
 	}
 }
 
@@ -213,29 +211,33 @@ pub fn print_all_fetches(
 		1
 	} + conf.align_spaces;
 
-	let mut stdout = stdout();
+	let mut stdout = StandardStream::stdout(ColorChoice::Auto);
 
 	for _ in 0..conf.offset.1 {
-		stdout.queue(Print('\n'))?;
+		writeln!(&mut stdout)?;
 	}
 
 	let mut ascii_lines = ascii.unwrap_or("").lines();
 	let mut data_lines = data.iter();
 	for index in 0..total_lines {
-		stdout.queue(Print(" ".repeat(conf.offset.0)))?;
+		write!(&mut stdout, "{}", " ".repeat(conf.offset.0))?;
 
 		if index >= ascii_start {
 			match ascii_lines.next() {
-				Some(line) => stdout.queue(PrintStyledContent(
-					format!("{line:ascii_max_length$}")
-						.bold()
-						.with(conf.ascii.color),
-				))?,
-				None => stdout.queue(Print(" ".repeat(ascii_max_length)))?,
-			};
+				Some(line) => {
+					stdout.set_color(
+						ColorSpec::new()
+							.set_fg(conf.ascii.color.get_color())
+							.set_intense(conf.ascii.color.is_intense())
+							.set_bold(true),
+					)?;
+					write!(&mut stdout, "{:ascii_max_length$}", line)
+				}
+				None => write!(&mut stdout, "{}", " ".repeat(ascii_max_length)),
+			}
 		} else {
-			stdout.queue(Print(" ".repeat(ascii_max_length)))?;
-		}
+			write!(&mut stdout, "{}", " ".repeat(ascii_max_length))
+		}?;
 
 		if index >= data_start {
 			if let Some(line) = data_lines.next() {
@@ -243,11 +245,11 @@ pub fn print_all_fetches(
 			}
 		}
 
-		stdout.queue(Print('\n'))?;
+		writeln!(&mut stdout)?;
 	}
 
 	for _ in 0..conf.padding_lines {
-		stdout.queue(Print('\n'))?;
+		writeln!(&mut stdout)?;
 	}
 
 	Ok(())

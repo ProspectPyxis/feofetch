@@ -10,6 +10,8 @@ and this project adheres to
 
 ### Changed
 
+- Program now uses `termcolor` instead of `crossterm` as a dependency - this
+  shouldn't affect user experience, but it does reduce the binary size
 - ASCII text that has less lines than the amount of data types is now centered
   vertically
 
