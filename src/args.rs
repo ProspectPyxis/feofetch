@@ -15,7 +15,4 @@ pub struct Args {
 	/// Set padding lines to this number, overriding config
 	#[arg(short, long)]
 	pub padding_lines: Option<usize>,
-	/// Removes all color from command output, even user-defined ones
-	#[arg(short = 'C', long)]
-	pub no_color: bool,
 }

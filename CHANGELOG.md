@@ -8,10 +8,6 @@ and this project adheres to
 
 ## [Unreleased]
 
-### Added
-
-- `--no-color`/`-C` command line flag to strip all colors from the output
-
 ### Changed
 
 - ASCII text that has less lines than the amount of data types is now centered
