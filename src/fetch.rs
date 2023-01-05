@@ -24,7 +24,7 @@ impl FetchData {
 		match data {
 			FetchType::Os => {
 				let os = sys_info::os_type().unwrap_or_else(|_| "Unknown".to_string());
-				let os_str = if os.as_str() == "Linux" {
+				let os_str = if &os[..] == "Linux" {
 					match sys_info::linux_os_release() {
 						Ok(info) => info.id.unwrap_or_else(|| "linux".to_string()),
 						Err(_) => "linux".to_string(),
@@ -35,7 +35,7 @@ impl FetchData {
 
 				FetchData {
 					label: "os",
-					icon: match os.as_str() {
+					icon: match &os[..] {
 						"Linux" => "",
 						"Darwin" => "",
 						"Windows" => "",
@@ -91,9 +91,8 @@ impl FetchData {
 				label: "wm",
 				icon: "",
 				text: {
-					let get_no_wmctrl = || match sys_info::os_type()
-						.unwrap_or_else(|_| "Unknown".to_string())
-						.as_str()
+					let get_no_wmctrl = || match &sys_info::os_type()
+						.unwrap_or_else(|_| "Unknown".to_string())[..]
 					{
 						"Linux" => env::var("XDG_SESSION_DESKTOP")
 							.or_else(|_| env::var("DESKTOP_SESSION"))
