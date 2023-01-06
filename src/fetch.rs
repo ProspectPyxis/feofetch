@@ -150,10 +150,10 @@ impl FetchData {
 				icon: "",
 				text: {
 					match env::var("TERM_PROGRAM") {
-						Ok(term) => match term.strip_suffix(".app") {
-							Some(term) => term.to_string(),
-							None => term,
-						},
+						Ok(term) => term
+							.strip_suffix(".app")
+							.map(|term| term.to_string())
+							.unwrap_or(term),
 						Err(_) => "unknown".to_string(),
 					}
 				},
