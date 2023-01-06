@@ -7,7 +7,47 @@ use std::{
 	io::{self, Write},
 };
 use termcolor::{ColorChoice, ColorSpec, StandardStream, WriteColor};
-use which::which;
+
+mod wm {
+	use crate::config::Config;
+	use std::env;
+	use which::which;
+
+	fn get_no_wmctrl() -> String {
+		match &sys_info::os_type().unwrap_or_else(|_| "Unknown".to_string())[..] {
+			"Linux" => env::var("XDG_SESSION_DESKTOP")
+				.or_else(|_| env::var("DESKTOP_SESSION"))
+				.unwrap_or_else(|_| "unknown".to_string()),
+			// TODO: Handle windows/mac os
+			_ => "unknown".to_string(),
+		}
+	}
+
+	fn try_get_wmctrl() -> Option<String> {
+		let out = std::process::Command::new("wmctrl")
+			.arg("-m")
+			.output()
+			.ok()?;
+
+		let output_str = std::str::from_utf8(&out.stdout).ok()?;
+
+		Some(
+			output_str
+				.lines()
+				.find(|line| line.starts_with("Name: "))
+				.map(|line| line.strip_prefix("Name: ").unwrap_or("error").to_string())
+				.unwrap_or_else(|| "unknown".to_string()),
+		)
+	}
+
+	pub fn get(conf: &Config) -> String {
+		if conf.wm.use_wmctrl && which("wmctrl").is_ok() {
+			try_get_wmctrl().unwrap_or_else(get_no_wmctrl)
+		} else {
+			get_no_wmctrl()
+		}
+	}
+}
 
 pub struct FetchData {
 	pub label: &'static str,
@@ -86,42 +126,7 @@ impl FetchData {
 			FetchType::Wm => FetchData {
 				label: "wm",
 				icon: "",
-				text: {
-					let get_no_wmctrl = || match &sys_info::os_type()
-						.unwrap_or_else(|_| "Unknown".to_string())[..]
-					{
-						"Linux" => env::var("XDG_SESSION_DESKTOP")
-							.or_else(|_| env::var("DESKTOP_SESSION"))
-							.unwrap_or_else(|_| "unknown".to_string()),
-						// TODO: Handle windows/mac os
-						_ => "unknown".to_string(),
-					};
-
-					if conf.wm.use_wmctrl && which("wmctrl").is_ok() {
-						let try_get_wmctrl = || -> Result<String, ()> {
-							let out = std::process::Command::new("wmctrl")
-								.arg("-m")
-								.output()
-								.map_err(|_| ())?;
-
-							let s = std::str::from_utf8(&out.stdout).map_err(|_| ())?;
-
-							match s.lines().find(|x| x.starts_with("Name: ")) {
-								Some(line) => {
-									Ok(line.strip_prefix("Name: ").unwrap_or("error").to_string())
-								}
-								None => Ok("unknown".to_string()),
-							}
-						};
-
-						match try_get_wmctrl() {
-							Ok(wm) => wm,
-							Err(_) => get_no_wmctrl(),
-						}
-					} else {
-						get_no_wmctrl()
-					}
-				},
+				text: wm::get(conf),
 			},
 
 			FetchType::Shell => FetchData {
