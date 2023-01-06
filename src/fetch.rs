@@ -213,9 +213,7 @@ pub fn print_all_fetches(
 
 	let mut stdout = StandardStream::stdout(ColorChoice::Auto);
 
-	for _ in 0..conf.offset.1 {
-		writeln!(&mut stdout)?;
-	}
+	write!(&mut stdout, "{}", "\n".repeat(conf.offset.1))?;
 
 	let mut ascii_lines = ascii.unwrap_or("").lines();
 	let mut data_lines = data.iter();
