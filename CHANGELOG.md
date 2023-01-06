@@ -8,10 +8,13 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- Program now respects the `NO_COLOR` environment variable, thanks to porting
+  from `crossterm` to `termcolor`
+
 ### Changed
 
-- Program now uses `termcolor` instead of `crossterm` as a dependency - this
-  shouldn't affect user experience, but it does reduce the binary size
 - ASCII text that has less lines than the amount of data types is now centered
   vertically
 
