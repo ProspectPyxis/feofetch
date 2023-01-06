@@ -128,16 +128,15 @@ impl FetchData {
 				label: "shell",
 				icon: "",
 				text: {
-					match env::var("SHELL") {
-						Ok(shell) => match std::path::Path::new(&shell).file_name() {
-							Some(shell) => match shell.to_str() {
-								Some(shell) => shell.to_string(),
-								None => "unknown".to_string(),
-							},
-							None => "unknown".to_string(),
-						},
-						Err(_) => "unknown".to_string(),
-					}
+					env::var("SHELL")
+						.ok()
+						.and_then(|shell| {
+							std::path::PathBuf::from(&shell)
+								.file_name()
+								.map(|s| s.to_os_string())
+						})
+						.and_then(|shell| shell.into_string().ok())
+						.unwrap_or_else(|| "unknown".to_string())
 				},
 			},
 
