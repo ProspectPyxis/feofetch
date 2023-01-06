@@ -138,9 +138,8 @@ impl FetchData {
 						.and_then(|shell| {
 							std::path::PathBuf::from(&shell)
 								.file_name()
-								.map(|s| s.to_os_string())
+								.map(|s| s.to_string_lossy().to_string())
 						})
-						.and_then(|shell| shell.into_string().ok())
 						.unwrap_or_else(|| "unknown".to_string())
 				},
 			},
