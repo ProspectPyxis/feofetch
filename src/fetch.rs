@@ -249,9 +249,7 @@ pub fn print_all_fetches(
 		writeln!(&mut stdout)?;
 	}
 
-	for _ in 0..conf.padding_lines {
-		writeln!(&mut stdout)?;
-	}
+	write!(&mut stdout, "{}", "\n".repeat(conf.padding_lines))?;
 
 	Ok(())
 }
